@@ -6,7 +6,7 @@ const {
 } = require("./loader");
 
 const LAYER_ASSET_PATH = "/static/css/layers.css";
-const PLUGIN_NAME = "CSSLayerPlugin";
+const PLUGIN_NAME = "CssLayeringPlugin";
 
 const OPTIONS_SCHEMA = {
   type: "object",
