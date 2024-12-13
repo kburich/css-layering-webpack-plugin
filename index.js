@@ -25,7 +25,7 @@ const OPTIONS_SCHEMA = {
     orderInjectStyle: {
       description:
         "Determines how layer order declaration is injected into html.",
-      enum: ["link", "style"],
+      enum: ["link", "style", "none"],
     },
   },
 };
@@ -112,12 +112,14 @@ class CSSLayeringPlugin {
   apply(compiler) {
     this.addLayeringLoader(compiler);
 
-    compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
-      this.injectOrder(compilation);
-      if (this.orderInjectStyle === "link") {
-        this.emitLinkAsset(compilation);
-      }
-    });
+    if (this.orderInjectStyle !== "none") {
+      compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
+        this.injectOrder(compilation);
+        if (this.orderInjectStyle === "link") {
+          this.emitLinkAsset(compilation);
+        }
+      });
+    }
   }
 }
 

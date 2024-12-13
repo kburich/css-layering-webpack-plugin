@@ -51,7 +51,7 @@ module.exports = {
 ### `orderInjectStyle`
 
 ```ts
-type OrderInjectStyle = "style" | "link";
+type OrderInjectStyle = "style" | "link" | "none";
 ```
 
 Determines how the @layer order statement will be injected. Either as a style or link tag. Default value is `style`.
