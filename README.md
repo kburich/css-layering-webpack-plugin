@@ -1,4 +1,4 @@
-# css-layering-webpack-plugin
+# css-layering-webpack-plugin &middot; ![RL Status Badge](https://secure.software/npm/badge/css-layering-webpack-plugin)
 
 Wraps CSS in named cascade layers. What CSS is wrapped in which layer is defined using glob patterns.
 Layer order is derived from order in which layers are defined.
