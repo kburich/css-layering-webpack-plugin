@@ -22,7 +22,7 @@ const OPTIONS_SCHEMA = {
       description: "Public path",
       type: "string",
     },
-    orderInjectStyle: {
+    injectOrderAs: {
       description:
         "Determines how layer order declaration is injected into html.",
       enum: ["link", "style", "none"],
@@ -40,7 +40,7 @@ const OPTIONS_SCHEMA = {
  * @typedef {Object} Options
  * @property {Layer[]} layers
  * @property {string} nonce
- * @property {"link"|"style"} orderInjectStyle
+ * @property {"link"|"style"} injectOrderAs
  * @property {string} publicPath
  */
 
@@ -52,7 +52,7 @@ class CSSLayeringPlugin {
     validateSchema(OPTIONS_SCHEMA, options, { name: PLUGIN_NAME });
     this.layers = options.layers;
     this.nonce = options.nonce;
-    this.orderInjectStyle = options.orderInjectStyle ?? "style";
+    this.injectOrderAs = options.injectOrderAs ?? "style";
     this.linkHref = path.join(options.publicPath ?? "", LAYER_ASSET_PATH);
   }
 
@@ -67,7 +67,7 @@ class CSSLayeringPlugin {
     HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(
       PLUGIN_NAME,
       (data, cb) => {
-        if (this.orderInjectStyle === "style") {
+        if (this.injectOrderAs === "style") {
           const nonceAttribute = this.nonce ? `nonce="${this.nonce}"` : "";
           const styleTag = `<style ${nonceAttribute}>${this.getOrderDeclaration()}</style>`;
           data.html = data.html.replace("<head>", `<head>${styleTag}`);
@@ -112,10 +112,10 @@ class CSSLayeringPlugin {
   apply(compiler) {
     this.addLayeringLoader(compiler);
 
-    if (this.orderInjectStyle !== "none") {
+    if (this.injectOrderAs !== "none") {
       compiler.hooks.thisCompilation.tap(PLUGIN_NAME, (compilation) => {
         this.injectOrder(compilation);
-        if (this.orderInjectStyle === "link") {
+        if (this.injectOrderAs === "link") {
           this.emitLinkAsset(compilation);
         }
       });
