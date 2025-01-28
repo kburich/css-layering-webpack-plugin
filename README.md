@@ -1,4 +1,4 @@
-# css-layering-webpack-plugin &middot; ![RL Status Badge](https://secure.software/npm/badge/css-layering-webpack-plugin)
+# css-layering-webpack-plugin &middot; [![RL Status Badge](https://secure.software/npm/badge/css-layering-webpack-plugin)](https://secure.software/npm/packages/css-layering-webpack-plugin)
 
 Wraps CSS in named cascade layers. What CSS is wrapped in which layer is defined using glob patterns.
 Layer order is derived from order in which layers are defined.
@@ -81,7 +81,6 @@ module.exports = {
   plugins: [
     new CssLayeringPlugin({
       layers: [
-        { name: "mui" }
         { path: "**/src/features/exports/**/*.module.scss", name: "exports" },
         { path: "**/src/components/**/*.module.scss", name: "components" },
         {
@@ -89,7 +88,7 @@ module.exports = {
           name: "ui-shared",
         },
       ],
-      injectOrderStyle: "link",
+      injectOrderAs: "link",
       publicPath: "/static/css/layers.css"
     }),
   ],
