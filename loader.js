@@ -18,6 +18,11 @@ const OPTIONS_SCHEMA = {
               "If undefined layer will only be included in layer order declaration (can be used for preexisting layers).",
             type: "string",
           },
+          exclude: {
+            description:
+              "All files matched with this value using minimatch package will be excluded from layer wrapping.",
+            type: "string",
+          },
           name: {
             description: "Name of layer",
             type: "string",
@@ -35,8 +40,8 @@ module.exports = function (source) {
   const layers = options.layers.filter((layer) => layer.path);
 
   for (const layer of layers) {
-    const { path, name } = layer;
-    if (minimatch.minimatch(this.resourcePath, path)) {
+    const { path, name, exclude } = layer;
+    if (minimatch.minimatch(this.resourcePath, path) && (exclude === undefined || !minimatch.minimatch(this.resourcePath, exclude))) {
       return wrapSourceInLayer(source, name);
     }
   }
