@@ -1,7 +1,6 @@
 # css-layering-webpack-plugin &middot; [![RL Status Badge](https://secure.software/npm/badge/css-layering-webpack-plugin)](https://secure.software/npm/packages/css-layering-webpack-plugin)
 
-Wraps CSS in named cascade layers. What CSS is wrapped in which layer is defined using glob patterns.
-Layer order is derived from order in which layers are defined.
+Wraps CSS in named cascade layers. What CSS is wrapped in which layer is defined using glob patterns supported by minimatch package. Note that it is also possible to exclude paths using glob patterns (see advanced use case). Layer order is derived from order in which layers are defined.
 
 ## Getting Started
 
@@ -85,11 +84,12 @@ module.exports = {
         { path: "**/src/components/**/*.module.scss", name: "components" },
         {
           path: "**/libraries/ui/dist/components/**/*.module.scss",
+          exclude: "**/notification.module.scss"
           name: "ui-shared",
         },
       ],
       injectOrderAs: "link",
-      publicPath: "/static/css/layers.css"
+      publicPath: "/static/css/layers.css",
     }),
   ],
 };

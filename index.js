@@ -33,6 +33,7 @@ const OPTIONS_SCHEMA = {
 /**
  * @typedef {Object} Layer
  * @property {string} path
+ * @property {string} exclude
  * @property {string} name
  */
 
