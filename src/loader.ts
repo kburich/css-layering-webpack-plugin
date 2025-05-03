@@ -1,8 +1,8 @@
-/* eslint @typescript-eslint/no-var-requires: "off" */
-const minimatch = require("minimatch");
-const { validateSchema } = require("webpack");
+import { minimatch } from "minimatch";
+import { validateSchema, LoaderContext } from "webpack";
+import type { JSONSchema7 } from "json-schema";
 
-const OPTIONS_SCHEMA = {
+export const OPTIONS_SCHEMA: JSONSchema7 = {
   type: "object",
   required: ["layers"],
   properties: {
@@ -33,7 +33,13 @@ const OPTIONS_SCHEMA = {
   },
 };
 
-module.exports = function (source) {
+export type Layer = {
+  path: string;
+  exclude: string;
+  name: string;
+};
+
+function loader(this: LoaderContext<{ layers: Layer[] }>, source: string) {
   const options = this.getOptions() || {};
   validateSchema(OPTIONS_SCHEMA, options, { name: "CSS Layering Loader" });
 
@@ -41,15 +47,18 @@ module.exports = function (source) {
 
   for (const layer of layers) {
     const { path, name, exclude } = layer;
-    if (minimatch.minimatch(this.resourcePath, path) && (exclude === undefined || !minimatch.minimatch(this.resourcePath, exclude))) {
+    if (
+      minimatch(this.resourcePath, path) &&
+      (exclude === undefined || !minimatch(this.resourcePath, exclude))
+    ) {
       return wrapSourceInLayer(source, name);
     }
   }
 
   return source;
-};
+}
 
-const wrapSourceInLayer = async (source, layerName) => {
+const wrapSourceInLayer = async (source: string, layerName: string) => {
   const lines = source.split("\n");
 
   const useLines = lines.filter((line) => line.trim().startsWith("@use"));
@@ -61,4 +70,4 @@ const wrapSourceInLayer = async (source, layerName) => {
   return `${useLinesString}\n@layer ${layerName} {\n ${otherLinesString} \n}`;
 };
 
-module.exports.OPTIONS_SCHEMA = OPTIONS_SCHEMA;
+export default loader;

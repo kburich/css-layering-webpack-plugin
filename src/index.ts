@@ -1,14 +1,13 @@
-/* eslint @typescript-eslint/no-var-requires: "off" */
-const path = require("path");
-const { Compilation, sources, validateSchema } = require("webpack");
-const {
-  OPTIONS_SCHEMA: LOADER_OPTIONS_SCHEMA,
-} = require("./loader");
+import { resolve, join } from "path";
+import { getHooks } from "html-webpack-plugin";
+import { Compilation, sources, validateSchema, type Compiler } from "webpack";
+import { OPTIONS_SCHEMA as LOADER_OPTIONS_SCHEMA, type Layer } from "./loader";
+import type { JSONSchema7 } from "json-schema";
 
 const LAYER_ASSET_PATH = "/static/css/layers.css";
 const PLUGIN_NAME = "CssLayeringPlugin";
 
-const OPTIONS_SCHEMA = {
+const OPTIONS_SCHEMA: JSONSchema7 = {
   type: "object",
   required: ["layers"],
   properties: {
@@ -30,59 +29,48 @@ const OPTIONS_SCHEMA = {
   },
 };
 
-/**
- * @typedef {Object} Layer
- * @property {string} path
- * @property {string} exclude
- * @property {string} name
- */
+interface Options {
+  layers: Layer[];
+  nonce?: string;
+  injectOrderAs?: "link" | "style";
+  publicPath?: string;
+}
 
-/**
- * @typedef {Object} Options
- * @property {Layer[]} layers
- * @property {string} nonce
- * @property {"link"|"style"} injectOrderAs
- * @property {string} publicPath
- */
+export class CSSLayeringPlugin {
+  private layers: Layer[];
+  private nonce?: string;
+  private injectOrderAs: string;
+  private linkHref: string;
 
-class CSSLayeringPlugin {
-  /**
-   * @param {Options} options
-   */
-  constructor(options) {
+  constructor(options: Options) {
     validateSchema(OPTIONS_SCHEMA, options, { name: PLUGIN_NAME });
     this.layers = options.layers;
     this.nonce = options.nonce;
     this.injectOrderAs = options.injectOrderAs ?? "style";
-    this.linkHref = path.join(options.publicPath ?? "", LAYER_ASSET_PATH);
+    this.linkHref = join(options.publicPath ?? "", LAYER_ASSET_PATH);
   }
 
-  getOrderDeclaration() {
+  getOrderDeclaration(): string {
     const order = this.layers.map((layer) => layer.name).join(", ");
     return `@layer ${order};`;
   }
 
-  injectOrder(compilation) {
-    const HtmlWebpackPlugin = require("html-webpack-plugin");
-
-    HtmlWebpackPlugin.getHooks(compilation).beforeEmit.tapAsync(
-      PLUGIN_NAME,
-      (data, cb) => {
-        if (this.injectOrderAs === "style") {
-          const nonceAttribute = this.nonce ? `nonce="${this.nonce}"` : "";
-          const styleTag = `<style ${nonceAttribute}>${this.getOrderDeclaration()}</style>`;
-          data.html = data.html.replace("<head>", `<head>${styleTag}`);
-          cb(null, data);
-        } else {
-          const linkTag = `<link rel="stylesheet" type="text/css" href="${this.linkHref}">`;
-          data.html = data.html.replace("<head>", `<head>${linkTag}`);
-          cb(null, data);
-        }
+  injectOrder(compilation: Compilation): void {
+    getHooks(compilation).beforeEmit.tapAsync(PLUGIN_NAME, (data, cb) => {
+      if (this.injectOrderAs === "style") {
+        const nonceAttribute = this.nonce ? `nonce="${this.nonce}"` : "";
+        const styleTag = `<style ${nonceAttribute}>${this.getOrderDeclaration()}</style>`;
+        data.html = data.html.replace("<head>", `<head>${styleTag}`);
+        cb(null, data);
+      } else {
+        const linkTag = `<link rel="stylesheet" type="text/css" href="${this.linkHref}">`;
+        data.html = data.html.replace("<head>", `<head>${linkTag}`);
+        cb(null, data);
       }
-    );
+    });
   }
 
-  emitLinkAsset(compilation) {
+  emitLinkAsset(compilation: Compilation): void {
     compilation.hooks.processAssets.tap(
       {
         name: PLUGIN_NAME,
@@ -95,12 +83,12 @@ class CSSLayeringPlugin {
     );
   }
 
-  addLayeringLoader(compiler) {
+  addLayeringLoader(compiler: Compiler): void {
     compiler.hooks.afterEnvironment.tap(PLUGIN_NAME, () => {
       const layeringLoaderRule = {
         test: /\.(sa|sc|c)ss$/,
         use: {
-          loader: path.resolve(__dirname, "loader.js"),
+          loader: resolve(__dirname, "loader.js"),
           options: { layers: this.layers },
         },
       };
@@ -110,7 +98,7 @@ class CSSLayeringPlugin {
     });
   }
 
-  apply(compiler) {
+  apply(compiler: Compiler): void {
     this.addLayeringLoader(compiler);
 
     if (this.injectOrderAs !== "none") {
@@ -123,5 +111,3 @@ class CSSLayeringPlugin {
     }
   }
 }
-
-module.exports = CSSLayeringPlugin;

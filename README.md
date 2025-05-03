@@ -27,11 +27,11 @@ Then add the plugin to your `webpack` config. For example:
 **webpack.config.js**
 
 ```js
-const CssLayeringPlugin = require("css-layering-webpack-plugin");
+const { CSSLayeringPlugin } = require("css-layering-webpack-plugin");
 
 module.exports = {
   plugins: [
-    new CssLayeringPlugin({
+    new CSSLayeringPlugin({
       layers: [
         { path: "**/src/features/exports/**/*.module.scss", name: "exports" },
         { path: "**/src/components/**/*.module.scss", name: "components" },
