@@ -4,14 +4,18 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc --project tsconfig.json",
-    "clean": "del-cli dist"
+    "clean": "del-cli dist",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@types/html-webpack-plugin": "3.2.9",
     "@types/loader-utils": "2.0.6",
     "del-cli": "6.0.0",
+    "husky": "9.1.7",
+    "lint-staged": "15.5.2",
     "loader-utils": "3.3.1",
     "typescript": "5.8.3",
+    "prettier": "3.5.3",
     "webpack": "5.97.1"
   },
   "dependencies": {
@@ -24,6 +28,11 @@
   "description": "Wrap CSS in cascade layers.",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,.json}": [
+      "prettier --write"
+    ]
   },
   "keywords": [
     "webpack",
