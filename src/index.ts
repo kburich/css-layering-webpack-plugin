@@ -79,7 +79,7 @@ export class CSSLayeringPlugin {
       () => {
         const order = this.getOrderDeclaration();
         compilation.emitAsset(LAYER_ASSET_PATH, new sources.RawSource(order));
-      }
+      },
     );
   }
 
