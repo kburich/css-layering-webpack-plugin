@@ -35,7 +35,7 @@ export const OPTIONS_SCHEMA: JSONSchema7 = {
 
 export type Layer = {
   path: string;
-  exclude: string;
+  exclude?: string;
   name: string;
 };
 

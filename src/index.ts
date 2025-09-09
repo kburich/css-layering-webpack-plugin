@@ -32,7 +32,7 @@ const OPTIONS_SCHEMA: JSONSchema7 = {
 interface Options {
   layers: Layer[];
   nonce?: string;
-  injectOrderAs?: "link" | "style";
+  injectOrderAs?: "link" | "style" | "none";
   publicPath?: string;
 }
 
