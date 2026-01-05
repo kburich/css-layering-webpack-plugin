@@ -34,7 +34,7 @@ export const OPTIONS_SCHEMA: JSONSchema7 = {
 };
 
 export type Layer = {
-  path: string;
+  path?: string;
   exclude?: string;
   name: string;
 };
@@ -48,6 +48,7 @@ function loader(this: LoaderContext<{ layers: Layer[] }>, source: string) {
   for (const layer of layers) {
     const { path, name, exclude } = layer;
     if (
+      path &&
       minimatch(this.resourcePath, path) &&
       (exclude === undefined || !minimatch(this.resourcePath, exclude))
     ) {
