@@ -1,0 +1,50 @@
+@use "sass:color";
+@use "sass:math";
+@layer components {
+  // Global comment about the theme
+
+  $primary: #0d6efd;
+  $secondary: #6c757d;
+
+  %button-base {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+  }
+
+  .button {
+    @extend %button-base;
+
+    &--primary {
+      $primary-dark: color.adjust($primary, $lightness: -5%);
+
+      color: $primary-dark;
+
+      &:hover {
+        color: color.scale($primary-dark, $lightness: 5%);
+      }
+    }
+
+    &--secondary {
+      color: $secondary;
+    }
+  }
+
+  .container {
+    $columns: 3;
+
+    width: math.div(100%, $columns);
+
+    @media (min-width: 768px) {
+      max-width: 720px;
+
+      .inner {
+        padding: 1rem;
+
+        &__title {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

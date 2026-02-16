@@ -1,0 +1,8 @@
+@use "sass:color";
+.button {
+  color: red;
+}
+@use "my:module";
+body {
+  margin: 0;
+}
