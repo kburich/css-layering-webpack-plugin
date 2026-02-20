@@ -6,7 +6,7 @@ function normalizeCss(css: string): string {
   return css.replace(/\s+/g, " ").trim();
 }
 
-describe("CSSLayeringPlugin CSS transformation end-to-end", () => {
+describe("CSSLayeringPlugin CSS transformation integration", () => {
   const cases = [
     // Basic case: single CSS file matched by path
     {

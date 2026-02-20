@@ -4,7 +4,7 @@ import { createCompiler, runCompiler, getPaths } from "./helpers/webpack";
 
 const LAYER_ASSET_PATH = "/static/css/layers.css";
 
-describe("CSSLayeringPlugin end-to-end", () => {
+describe("CSSLayeringPlugin integration", () => {
   const layers = [{ name: "base" }, { name: "components" }];
 
   it("injects @layer order as a <style> tag by default", async () => {

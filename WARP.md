@@ -24,8 +24,8 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 - `pnpm test` — run the Jest test suite (Node test environment, tests under `tests/**/*.test.ts`).
 - Run a single test file (example using the existing test file):
-  - `pnpm jest tests/css-layering-plugin.e2e.test.ts`
-  - or `pnpm test -- tests/css-layering-plugin.e2e.test.ts`
+  - `pnpm jest tests/css-layering-plugin.integration.test.ts`
+  - or `pnpm test -- tests/css-layering-plugin.integration.test.ts`
 
 ## Architecture overview
 
@@ -36,8 +36,8 @@ This repository implements a **webpack plugin and loader** that wrap CSS (and Sa
 Key pieces:
 - `src/index.ts` — main webpack plugin implementation (`CSSLayeringPlugin`).
 - `src/loader.ts` — webpack loader that wraps matched stylesheets in `@layer` blocks.
-- `tests/css-layering-plugin.e2e.test.ts` — Jest end-to-end tests covering the plugin's HTML injection behavior using real webpack compilations.
-- `tests/css-layering-plugin.css.e2e.test.ts` — Jest end-to-end tests covering CSS transformation with various layer configurations.
+- `tests/css-layering-plugin.integration.test.ts` — Jest integration tests covering the plugin's HTML injection behavior using real webpack compilations.
+- `tests/css-layering-plugin.css.integration.test.ts` — Jest integration tests covering CSS transformation with various layer configurations.
 - `jest.config.js` — Jest configuration.
 - `tsconfig.json` — TypeScript compiler configuration targeting `dist/`.
 
@@ -112,7 +112,7 @@ This design ensures third-party `@use` imports remain at the top of the file, wh
   - Uses `ts-jest` to transform TypeScript test files.
   - Includes test files under `tests/**/*.test.ts`.
 
-- **End-to-end tests (`tests/css-layering-plugin.e2e.test.ts`)**
+- **Integration tests (`tests/css-layering-plugin.integration.test.ts`)**
   - Uses Jest with real webpack compilations against test fixtures.
   - Verifies that:
     - With default settings (`injectOrderAs: "style"`), the plugin injects a `<style>` tag containing the expected `@layer` order into the HTML `<head>`.
@@ -120,7 +120,7 @@ This design ensures third-party `@use` imports remain at the top of the file, wh
     - When `injectOrderAs: "none"`, the plugin does not inject any order or emit any asset.
     - Nonce support works correctly when provided.
 
-- **CSS transformation tests (`tests/css-layering-plugin.css.e2e.test.ts`)**
+- **CSS transformation tests (`tests/css-layering-plugin.css.integration.test.ts`)**
   - Verifies CSS wrapping across multiple fixture scenarios including basic, exclude, multi-layer, SCSS, and edge cases.
 
 ### TypeScript configuration (`tsconfig.json`)
