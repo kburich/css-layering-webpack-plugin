@@ -71,6 +71,10 @@ build/
 build-standalone-report/
 storybook-build/
 
+dist/
+
+tests/fixtures-output/
+
 # Covers JetBrains IDE PyCharm
 .idea/
 

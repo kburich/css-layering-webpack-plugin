@@ -1,0 +1,10 @@
+@use "sass:color";
+@use "my:module";
+@layer components {
+ .button {
+  color: red;
+}
+body {
+  margin: 0;
+} 
+}

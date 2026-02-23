@@ -1,0 +1,10 @@
+/* top comment */
+@use "sass:color";
+.main {
+  color: red;
+}
+// mid comment
+@use "my:module";
+.footer {
+  margin: 0;
+}

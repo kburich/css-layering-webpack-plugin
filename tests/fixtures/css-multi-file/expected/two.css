@@ -1,0 +1,5 @@
+@layer shared {
+  .two {
+    color: blue;
+  }
+}

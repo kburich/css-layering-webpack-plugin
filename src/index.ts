@@ -1,10 +1,10 @@
-import { resolve, join } from "path";
+import { resolve } from "path";
 import { getHooks } from "html-webpack-plugin";
 import { Compilation, sources, validateSchema, type Compiler } from "webpack";
 import { OPTIONS_SCHEMA as LOADER_OPTIONS_SCHEMA, type Layer } from "./loader";
 import type { JSONSchema7 } from "json-schema";
 
-const LAYER_ASSET_PATH = "/static/css/layers.css";
+const DEFAULT_LAYER_ASSET_PATH = "/static/css/layers.css";
 const PLUGIN_NAME = "CssLayeringPlugin";
 
 const OPTIONS_SCHEMA: JSONSchema7 = {
@@ -47,7 +47,7 @@ export class CSSLayeringPlugin {
     this.layers = options.layers;
     this.nonce = options.nonce;
     this.injectOrderAs = options.injectOrderAs ?? "style";
-    this.linkHref = join(options.publicPath ?? "", LAYER_ASSET_PATH);
+    this.linkHref = options.publicPath ?? DEFAULT_LAYER_ASSET_PATH;
   }
 
   getOrderDeclaration(): string {
@@ -78,7 +78,7 @@ export class CSSLayeringPlugin {
       },
       () => {
         const order = this.getOrderDeclaration();
-        compilation.emitAsset(LAYER_ASSET_PATH, new sources.RawSource(order));
+        compilation.emitAsset(this.linkHref, new sources.RawSource(order));
       },
     );
   }

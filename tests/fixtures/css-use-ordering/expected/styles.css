@@ -1,0 +1,12 @@
+@use "sass:color";
+@use "my:module";
+@layer components {
+  /* top comment */
+  .main {
+    color: red;
+  }
+  // mid comment
+  .footer {
+    margin: 0;
+  }
+}

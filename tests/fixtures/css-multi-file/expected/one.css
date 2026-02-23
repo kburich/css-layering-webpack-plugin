@@ -1,0 +1,5 @@
+@layer shared {
+  .one {
+    color: red;
+  }
+}
