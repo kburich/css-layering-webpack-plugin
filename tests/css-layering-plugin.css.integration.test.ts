@@ -112,6 +112,60 @@ describe("CSSLayeringPlugin CSS transformation integration", () => {
       cssFile: "two.css",
       layers: [{ name: "shared", path: "**/*.css" }],
     },
+    // Array path patterns: multiple patterns should all be matched
+    {
+      fixture: "css-array-path",
+      outputName: "css",
+      cssFile: "button.css",
+      layers: [
+        { name: "components", path: ["**/button.css", "**/input.scss"] },
+      ],
+    },
+    {
+      fixture: "css-array-path",
+      outputName: "css",
+      cssFile: "input.scss",
+      layers: [
+        { name: "components", path: ["**/button.css", "**/input.scss"] },
+      ],
+    },
+    // Array exclude patterns: files matching any exclude pattern should not be wrapped
+    {
+      fixture: "css-array-exclude",
+      outputName: "css",
+      cssFile: "app.css",
+      layers: [
+        {
+          name: "components",
+          path: "**/*.css",
+          exclude: ["**/*.test.css", "**/*.spec.css"],
+        },
+      ],
+    },
+    {
+      fixture: "css-array-exclude",
+      outputName: "css",
+      cssFile: "app.test.css",
+      layers: [
+        {
+          name: "components",
+          path: "**/*.css",
+          exclude: ["**/*.test.css", "**/*.spec.css"],
+        },
+      ],
+    },
+    {
+      fixture: "css-array-exclude",
+      outputName: "css",
+      cssFile: "app.spec.css",
+      layers: [
+        {
+          name: "components",
+          path: "**/*.css",
+          exclude: ["**/*.test.css", "**/*.spec.css"],
+        },
+      ],
+    },
   ] as const;
 
   for (const testCase of cases) {
