@@ -8,156 +8,101 @@ function normalizeCss(css: string): string {
 
 describe("CSSLayeringPlugin CSS transformation integration", () => {
   const cases = [
-    // Basic case: single CSS file matched by path
     {
+      name: "basic CSS file wrapping",
       fixture: "css-basic",
       outputName: "css",
-      cssFile: "styles.css",
+      cssFiles: ["styles.css"],
       layers: [{ name: "components", path: "**/styles.css" }],
     },
-    // Exclude behavior: one file wrapped, one left untouched
     {
+      name: "exclude pattern",
       fixture: "css-exclude",
       outputName: "css",
-      cssFile: "styles.css",
+      cssFiles: ["styles.css", "styles.ignore.css"],
       layers: [
         { name: "components", path: "**/*.css", exclude: "**/*.ignore.css" },
       ],
     },
     {
-      fixture: "css-exclude",
-      outputName: "css",
-      cssFile: "styles.ignore.css",
-      layers: [
-        { name: "components", path: "**/*.css", exclude: "**/*.ignore.css" },
-      ],
-    },
-    // Multiple layers with different paths
-    {
+      name: "multiple layers with different paths",
       fixture: "css-multi-layers",
       outputName: "css",
-      cssFile: "reset.css",
+      cssFiles: ["reset.css", "components.css"],
       layers: [
         { name: "base", path: "**/reset.css" },
         { name: "components", path: "**/components.css" },
       ],
     },
     {
-      fixture: "css-multi-layers",
-      outputName: "css",
-      cssFile: "components.css",
-      layers: [
-        { name: "base", path: "**/reset.css" },
-        { name: "components", path: "**/components.css" },
-      ],
-    },
-    // Layers without path should not be used for wrapping
-    {
+      name: "preexisting layers without path",
       fixture: "css-preexisting-layer",
       outputName: "css",
-      cssFile: "styles.css",
+      cssFiles: ["styles.css"],
       layers: [
         { name: "preexisting" },
         { name: "components", path: "**/styles.css" },
       ],
     },
-    // Non-matching path pattern should leave CSS unchanged
     {
+      name: "non-matching path pattern",
       fixture: "css-no-match",
       outputName: "css",
-      cssFile: "plain.css",
+      cssFiles: ["plain.css"],
       layers: [{ name: "components", path: "**/styles.css" }],
     },
-    // Use ordering and comments: @use lines hoisted, others wrapped
     {
+      name: "@use line hoisting",
       fixture: "css-use-ordering",
       outputName: "css",
-      cssFile: "styles.css",
+      cssFiles: ["styles.css"],
       layers: [{ name: "components", path: "**/styles.css" }],
     },
-    // SCSS file handling
     {
+      name: "SCSS file handling",
       fixture: "css-scss",
       outputName: "css",
-      cssFile: "styles.scss",
+      cssFiles: ["styles.scss"],
       layers: [{ name: "components", path: "**/*.scss" }],
     },
-    // Complex SCSS file with nesting, extends, variables, media queries
     {
+      name: "complex SCSS with nesting and variables",
       fixture: "css-scss-complex",
       outputName: "css",
-      cssFile: "styles-complex.scss",
+      cssFiles: ["styles-complex.scss"],
       layers: [{ name: "components", path: "**/styles-complex.scss" }],
     },
-    // Multiple layers affecting the same file: first matching layer should be used
     {
+      name: "first matching layer wins",
       fixture: "css-multi-match",
       outputName: "css",
-      cssFile: "styles.css",
+      cssFiles: ["styles.css"],
       layers: [
         { name: "base", path: "**/styles.css" },
         { name: "components", path: "**/*.css" },
       ],
     },
-    // Single layer applied to multiple files via glob
     {
+      name: "single layer applied to multiple files",
       fixture: "css-multi-file",
       outputName: "css",
-      cssFile: "one.css",
+      cssFiles: ["one.css", "two.css"],
       layers: [{ name: "shared", path: "**/*.css" }],
     },
     {
-      fixture: "css-multi-file",
-      outputName: "css",
-      cssFile: "two.css",
-      layers: [{ name: "shared", path: "**/*.css" }],
-    },
-    // Array path patterns: multiple patterns should all be matched
-    {
+      name: "array path patterns",
       fixture: "css-array-path",
       outputName: "css",
-      cssFile: "button.css",
+      cssFiles: ["button.css", "input.scss"],
       layers: [
         { name: "components", path: ["**/button.css", "**/input.scss"] },
       ],
     },
     {
-      fixture: "css-array-path",
-      outputName: "css",
-      cssFile: "input.scss",
-      layers: [
-        { name: "components", path: ["**/button.css", "**/input.scss"] },
-      ],
-    },
-    // Array exclude patterns: files matching any exclude pattern should not be wrapped
-    {
+      name: "array exclude patterns",
       fixture: "css-array-exclude",
       outputName: "css",
-      cssFile: "app.css",
-      layers: [
-        {
-          name: "components",
-          path: "**/*.css",
-          exclude: ["**/*.test.css", "**/*.spec.css"],
-        },
-      ],
-    },
-    {
-      fixture: "css-array-exclude",
-      outputName: "css",
-      cssFile: "app.test.css",
-      layers: [
-        {
-          name: "components",
-          path: "**/*.css",
-          exclude: ["**/*.test.css", "**/*.spec.css"],
-        },
-      ],
-    },
-    {
-      fixture: "css-array-exclude",
-      outputName: "css",
-      cssFile: "app.spec.css",
+      cssFiles: ["app.css", "app.test.css", "app.spec.css"],
       layers: [
         {
           name: "components",
@@ -169,9 +114,9 @@ describe("CSSLayeringPlugin CSS transformation integration", () => {
   ] as const;
 
   for (const testCase of cases) {
-    const { fixture, outputName, cssFile, layers } = testCase;
+    const { name, fixture, outputName, cssFiles, layers } = testCase;
 
-    it(`wraps CSS for fixture ${fixture} with configured layers`, async () => {
+    it(name, async () => {
       const compiler = createCompiler(
         fixture,
         outputName,
@@ -195,16 +140,19 @@ describe("CSSLayeringPlugin CSS transformation integration", () => {
 
       const { outDir, fixturesDir } = getPaths(fixture, outputName);
 
-      const actualCss = await fs.readFile(
-        path.join(outDir, "css", cssFile),
-        "utf8",
-      );
-      const expectedCss = await fs.readFile(
-        path.join(fixturesDir, "expected", cssFile),
-        "utf8",
-      );
+      // Check all CSS files for this fixture
+      for (const cssFile of cssFiles) {
+        const actualCss = await fs.readFile(
+          path.join(outDir, "css", cssFile),
+          "utf8",
+        );
+        const expectedCss = await fs.readFile(
+          path.join(fixturesDir, "expected", cssFile),
+          "utf8",
+        );
 
-      expect(normalizeCss(actualCss)).toBe(normalizeCss(expectedCss));
+        expect(normalizeCss(actualCss)).toBe(normalizeCss(expectedCss));
+      }
     });
   }
 });
