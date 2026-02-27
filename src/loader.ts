@@ -16,12 +16,18 @@ export const OPTIONS_SCHEMA: JSONSchema7 = {
             description:
               "All files that are matched with this value using minimatch package will be wrapped with this layer." +
               "If undefined layer will only be included in layer order declaration (can be used for preexisting layers).",
-            type: "string",
+            oneOf: [
+              { type: "string" },
+              { type: "array", items: { type: "string" } },
+            ],
           },
           exclude: {
             description:
               "All files matched with this value using minimatch package will be excluded from layer wrapping.",
-            type: "string",
+            oneOf: [
+              { type: "string" },
+              { type: "array", items: { type: "string" } },
+            ],
           },
           name: {
             description: "Name of layer",
@@ -34,8 +40,8 @@ export const OPTIONS_SCHEMA: JSONSchema7 = {
 };
 
 export type Layer = {
-  path?: string;
-  exclude?: string;
+  path?: string | string[];
+  exclude?: string | string[];
   name: string;
 };
 
@@ -47,11 +53,20 @@ function loader(this: LoaderContext<{ layers: Layer[] }>, source: string) {
 
   for (const layer of layers) {
     const { path, name, exclude } = layer;
-    if (
-      path &&
-      minimatch(this.resourcePath, path) &&
-      (exclude === undefined || !minimatch(this.resourcePath, exclude))
-    ) {
+
+    const pathMatches = path
+      ? Array.isArray(path)
+        ? path.some((pattern) => minimatch(this.resourcePath, pattern))
+        : minimatch(this.resourcePath, path)
+      : false;
+
+    const isExcluded = exclude
+      ? Array.isArray(exclude)
+        ? exclude.some((pattern) => minimatch(this.resourcePath, pattern))
+        : minimatch(this.resourcePath, exclude)
+      : false;
+
+    if (pathMatches && !isExcluded) {
       return wrapSourceInLayer(source, name);
     }
   }

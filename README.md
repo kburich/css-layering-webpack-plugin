@@ -47,6 +47,22 @@ module.exports = {
 
 ## Options
 
+### `layers`
+
+```ts
+type Layer = {
+  path?: string | string[];
+  exclude?: string | string[];
+  name: string;
+};
+```
+
+An array of layer configurations. Each layer can have:
+
+- `name` (required): The name of the CSS cascade layer
+- `path` (optional): A glob pattern or array of glob patterns to match files that should be wrapped in this layer. If omitted, the layer will only appear in the layer order declaration.
+- `exclude` (optional): A glob pattern or array of glob patterns to exclude files from being wrapped in this layer.
+
 ### `injectOrderAs`
 
 ```ts
@@ -86,6 +102,12 @@ module.exports = {
           path: "**/libraries/ui/dist/components/**/*.module.scss",
           exclude: "**/notification.module.scss",
           name: "ui-shared",
+        },
+        {
+          // Multiple patterns can be provided as arrays
+          path: ["**/src/**/*.css", "**/lib/**/*.scss"],
+          exclude: ["**/*.test.css", "**/*.spec.scss"],
+          name: "utilities",
         },
       ],
       injectOrderAs: "link",
