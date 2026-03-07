@@ -90,11 +90,11 @@ If the layer order is injected via style tag then the nonce property will be set
 ## Advanced usage example
 
 ```js
-const CssLayeringPlugin = require("css-layering-webpack-plugin");
+const { CSSLayeringPlugin } = require("css-layering-webpack-plugin");
 
 module.exports = {
   plugins: [
-    new CssLayeringPlugin({
+    new CSSLayeringPlugin({
       layers: [
         { path: "**/src/features/exports/**/*.module.scss", name: "exports" },
         { path: "**/src/components/**/*.module.scss", name: "components" },
