@@ -2,6 +2,17 @@
 
 Wraps CSS in named cascade layers. What CSS is wrapped in which layer is defined using glob patterns supported by minimatch package. Note that it is also possible to exclude paths using glob patterns (see advanced use case). Layer order is derived from order in which layers are defined.
 
+## Why CSS Cascade Layers?
+
+CSS Cascade Layers provide a way to organize CSS with explicit specificity control:
+
+- **Better organization** - Group related styles together
+- **Specificity control** - Layer order determines precedence, not specificity
+- **Easier overrides** - Later layers override earlier ones, regardless of selector specificity
+- **Framework integration** - Cleanly separate third-party, base, component, and utility styles
+
+Learn more: [MDN: CSS Cascade Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
+
 ## Getting Started
 
 To begin, you'll need to install `css-layering-webpack-plugin`:
@@ -120,6 +131,17 @@ module.exports = {
 > [!Note]
 >
 > You can inject preexisting named layers into layer order by specifying a layer without `path`
+
+## Migrating from pre-TypeScript versions (< 0.3.0)
+
+The plugin export changed from a **default export** to a **named export**. Update your import:
+
+```diff
+- const CSSLayeringPlugin = require("css-layering-webpack-plugin");
++ const { CSSLayeringPlugin } = require("css-layering-webpack-plugin");
+```
+
+The `path` and `exclude` options now also accept arrays of glob patterns in addition to single strings. Existing single-string configurations continue to work without changes.
 
 ## License
 
