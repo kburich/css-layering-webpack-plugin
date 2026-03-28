@@ -121,6 +121,17 @@ module.exports = {
 >
 > You can inject preexisting named layers into layer order by specifying a layer without `path`
 
+## Migrating from pre-TypeScript versions (< 0.3.0)
+
+The plugin export changed from a **default export** to a **named export**. Update your import:
+
+```diff
+- const CSSLayeringPlugin = require("css-layering-webpack-plugin");
++ const { CSSLayeringPlugin } = require("css-layering-webpack-plugin");
+```
+
+The `path` and `exclude` options now also accept arrays of glob patterns in addition to single strings. Existing single-string configurations continue to work without changes.
+
 ## License
 
 [MIT](./LICENSE)
