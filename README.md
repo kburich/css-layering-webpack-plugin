@@ -2,6 +2,17 @@
 
 Wraps CSS in named cascade layers. What CSS is wrapped in which layer is defined using glob patterns supported by minimatch package. Note that it is also possible to exclude paths using glob patterns (see advanced use case). Layer order is derived from order in which layers are defined.
 
+## Why CSS Cascade Layers?
+
+CSS Cascade Layers provide a way to organize CSS with explicit specificity control:
+
+- **Better organization** - Group related styles together
+- **Specificity control** - Layer order determines precedence, not specificity
+- **Easier overrides** - Later layers override earlier ones, regardless of selector specificity
+- **Framework integration** - Cleanly separate third-party, base, component, and utility styles
+
+Learn more: [MDN: CSS Cascade Layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
+
 ## Getting Started
 
 To begin, you'll need to install `css-layering-webpack-plugin`:
