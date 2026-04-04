@@ -5,10 +5,35 @@ on:
     branches: [main]
 
 jobs:
+  check_deps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: gh-action-rl-protect-scan
+        uses: reversinglabs/gh-action-rl-protect-scan@v1
+        id: rl-protect
+        env:
+          RL_TOKEN: ${{ secrets.RL_TOKEN }}
+        with:
+          scan-path: 'package.json'
+          scan-profile: 'baseline'
+          report: 'rl-protect-report.json'
+          check-deps: 'develop,release'
+          log-file: 'rl-protect.txt'
+          log-level: 'pass'
+
+      - name: Run a multi-line script to show the result of the rl-protect action
+        run: |
+            echo "Status of rl-protect: ${{steps.rl-protect.outputs.status}}"
+            echo "Description of rl-protect: ${{steps.rl-protect.outputs.description}}"
+            ls -la
+            exit 0
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: pnpm/action-setup@v4
         with:
