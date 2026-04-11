@@ -23,6 +23,7 @@ jobs:
           check-deps: 'develop,release'
           log-file: 'rl-protect.txt'
           log-level: 'pass'
+          verbose: true
 
       - name: Run a multi-line script to show the result of the rl-protect action
         run: |
